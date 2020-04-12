@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
 
+import { Meteor } from 'meteor/meteor';
 import Entries from '/imports/api/entries';
 import Zips from '/imports/api/zips';
 import ZipsDaily from '/imports/api/zipsDaily';
@@ -26,7 +26,7 @@ function computeDailyAggregations() {
       })
       zip = ZipsDaily.findOne(id);
     };
-    const cases = zip.cases + (entry.infected ? 1 : 0);
+    const cases = zip.cases + (entry.suspected ? 1 : 0);
     const submissions = zip.submissions + 1;
     const fraction = cases/submissions;
     // increment 
@@ -57,7 +57,7 @@ function computeAggregations() {
     };
     Entries.update(entry._id, {$set: {aggregated: true}});
 
-    const cases = zip.cases + (entry.infected ? 1 : 0);
+    const cases = zip.cases + (entry.suspected ? 1 : 0);
     const submissions = zip.submissions + 1;
     const fraction = cases/submissions;
     // increment 
@@ -88,3 +88,19 @@ Meteor.methods({
   }
 
 })
+
+Meteor.startup(() => {
+  console.log('start aggregation loop');
+  Meteor.setTimeout(() => {
+    computeAggregations();
+    computeDailyAggregations();
+  }, 1000*3600)
+
+  // Meteor.setTimeout(() => {
+  //   // Todo!
+  //   // computeWeeklyAggregations()  
+  // }, 12000*3600)
+
+});
+
+

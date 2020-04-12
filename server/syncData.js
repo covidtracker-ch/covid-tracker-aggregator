@@ -55,13 +55,10 @@ function isSuspectedPositive(entry) {
     if(entry[key] != "null" && groupC.includes(key)) score += ((entry.age_range == '0-10') ? 1 : 0.5);
   });
 
-  console.log('score',score);
-
   if(score >= 3 && hasGroupASymptom) return true;
   if(entry.was_in_contact_with_case != "null" && hasGroupASymptom) return true;
 
   return false;
-
 }
 
 function hasTestedTPositive(entry) {
@@ -122,7 +119,10 @@ function getData() {
   entries.forEach((entry,i) => {
     if(i%100 == 0) console.log(i);
     // if(i%100 !== 0) return;                      // faster retrieval for dev
-    if(!entry.age_range) return;                    // it is an "old" entry
+    if(!entry.age_range) {
+      // it is an "old" entry
+      console.log('old format, who cares');
+    }                    
     if(Entries.findOne({id: entry.id})) return;
     entry._created = new Date(entry._created);
     entry.suspected = isSuspectedPositive(entry);
@@ -131,7 +131,6 @@ function getData() {
   });
   console.log('done.');
 }
-
 
 Meteor.methods({
 
@@ -151,3 +150,16 @@ Meteor.methods({
   },
 
 })
+
+
+Meteor.startup(() => {
+  console.log('start sync data loop')
+  Meteor.setInterval(() => {
+    getData();
+  }, 1000*3600)
+})
+
+
+
+
+
