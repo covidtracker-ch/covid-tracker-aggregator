@@ -13,16 +13,16 @@ function isSuspectedPositive(entry) {
   let hasGroupASymptom = false;
 
   Object.keys(entry).forEach(key => {
-    if(entry[key] != "null" && groupA.includes(key)) {
+    if(entry[key] != "" && groupA.includes(key)) {
       score += 2;
       hasGroupASymptom = true;
     }
-    if(entry[key] != "null" && groupB.includes(key)) score += 1;
-    if(entry[key] != "null" && groupC.includes(key)) score += ((entry.age_range == '0-10') ? 1 : 0.5);
+    if(entry[key] != "" && groupB.includes(key)) score += 1;
+    if(entry[key] != "" && groupC.includes(key)) score += ((entry.age_range == '0-10') ? 1 : 0.5);
   });
 
   if(score >= 3 && hasGroupASymptom) return true;
-  if(entry.was_in_contact_with_case != "null" && hasGroupASymptom) return true;
+  if(entry.was_in_contact_with_case != "" && hasGroupASymptom) return true;
 
   return false;
 }
@@ -93,6 +93,7 @@ function getData() {
     entry._created = new Date(entry._created);
     entry.suspected = isSuspectedPositive(entry);
     entry.aggregated = false;
+    console.log(entry);
     Entries.insert(entry)
   });
   console.log('done.');
@@ -106,11 +107,11 @@ Meteor.methods({
 
   classifyAllThatAreNot() {
     // this we have to redo if case definition changes
-    const entries = Entries.find({infected: {$exists: false}}).fetch()
+    const entries = Entries.find({suspected: {$exists: false}}).fetch()
     console.log('classyfing', entries.length);
     entries.forEach((e,i) => {
       if(i%100 == 0) console.log(i)
-      Entries.update(e._id, {$set: {infected: isInfected(e)}})
+      Entries.update(e._id, {$set: {suspected: isSuspectedPositive(e)}})
     });
     console.log('done')
   },
