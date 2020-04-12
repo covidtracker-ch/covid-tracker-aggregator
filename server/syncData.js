@@ -3,40 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import Entries from '/imports/api/entries';
 const parse = require('csv-parse/lib/sync')
 
-
-// deprecated, old case definition
-
-// function isInfected(entry) {
-
-//   if(entry.test_result == "positive") return true;
-
-//   const hasFever = entry.symptom_fever != "null";         // important symptom
-//   const hasCoughing = entry.symptom_coughing != "null";   // important symptom
-//   const hasDyspnea = entry.symptom_dyspnea != "null";     // important symptom
-
-//   const hasTiredness = entry.symptom_tiredness != "null";
-//   const hasThroad = entry.symptom_throat != "null";
-
-//   let countImportantSymtoms = 0;
-//   countImportantSymtoms += (hasFever ? 1 : 0);
-//   countImportantSymtoms += (hasCoughing ? 1 : 0);
-//   countImportantSymtoms += (hasDyspnea ? 1 : 0);
-
-//   if(countImportantSymtoms == 3) return true;
-
-
-//   let countOtherSymptoms = 0;
-//   countOtherSymptoms += (hasTiredness ? 1 : 0);
-//   countOtherSymptoms += (hasThroad ? 1 : 0);
-
-//   if(countImportantSymtoms == 2 && countOtherSymptoms >= 1) return true;
-
-//   return false;
-
-//   return isInfected;
-// }
-
-
 function isSuspectedPositive(entry) {
   // case definition: https://docs.google.com/spreadsheets/d/1RjW7Q4GEi4UZLK3GzF2x0pw5TpMVwKaFMLZcb-h0duQ/edit?usp=sharing
   const groupA = ['symptom_coughing','symptom_dyspnea','symptom_fever','symptom_lostTaste'];
