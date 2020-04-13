@@ -93,7 +93,6 @@ function getData() {
     entry._created = new Date(entry._created);
     entry.suspected = isSuspectedPositive(entry);
     entry.aggregated = false;
-    console.log(entry);
     Entries.insert(entry)
   });
   console.log('done.');
