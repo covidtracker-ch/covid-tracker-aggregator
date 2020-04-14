@@ -30,7 +30,7 @@ Meteor.methods({
   },
 
   importETHData() {
-    const url = 'https://www.dropbox.com/s/9yod1mbzjkvljpj/entries.json?raw=1';
+    const url = Meteor.settings.importURL;
     let string;
 
     try {

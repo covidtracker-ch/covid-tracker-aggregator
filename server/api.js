@@ -30,7 +30,7 @@ function toCSV(json) {
 app.get('/api/zips', (req, res) => {
   let sortObj = {};
   if(req.query.sort) sortObj[req.query.sort] = -1;
-  const zips = Zips.find({},{
+  const zips = Zips.find({submissions: {$gte: 50}},{
     sort: sortObj, 
     limit: req.query.limit/1.0
   }).fetch();
@@ -44,7 +44,7 @@ app.get('/api/zips', (req, res) => {
 });
 
 app.get('/api/zipsDaily', (req, res) => {
-  const zipsDaily = ZipsDaily.find({}).fetch();
+  const zipsDaily = ZipsDaily.find({submissions: {$gte: 50}}).fetch();
   res.status(200).json(zipsDaily);
 });
 

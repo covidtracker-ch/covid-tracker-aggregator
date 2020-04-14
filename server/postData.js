@@ -6,7 +6,7 @@ import ZipsDaily from '/imports/api/zipsDaily';
 
 function postData() {
   console.log('post data to dataserver...')
-  const zips = Zips.find().fetch();
+  const zips = Zips.find({submissions: {$gte: 50}});
   let cases = 0;
   let submissions = 0;
   zips.forEach(z => {
@@ -18,7 +18,7 @@ function postData() {
   HTTP.post(Meteor.settings.postURL,{
     data: {
       zips: zips,
-      zipsDaily: ZipsDaily.find().fetch(),
+      zipsDaily: ZipsDaily.find({submissions: {$gte: 50}}).fetch(),
       zipsWeekly: [],
       total: {
         cases, submissions
