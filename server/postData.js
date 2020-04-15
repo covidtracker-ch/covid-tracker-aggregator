@@ -31,17 +31,17 @@ function postData() {
 
   console.log(postObj);
 
-  // HTTP.post(Meteor.settings.postURL,{
-  //   data: postObj
-  // }, r => {
-  //   // console.log(r)
-  // })
+  HTTP.post(Meteor.settings.postURL,{
+    data: postObj
+  }, r => {
+    // console.log(r)
+  })
 
-  // HTTP.post(Meteor.settings.postURL2,{
-  //   data: postObj
-  // }, r => {
-  //   // console.log(r)
-  // })
+  HTTP.post(Meteor.settings.postURL2,{
+    data: postObj
+  }, r => {
+    // console.log(r)
+  })
   console.log('done');
 }
 
