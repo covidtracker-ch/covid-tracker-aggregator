@@ -29,8 +29,6 @@ function postData() {
     }
   }
 
-  console.log(postObj);
-
   HTTP.post(Meteor.settings.postURL,{
     data: postObj
   }, r => {
