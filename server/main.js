@@ -3,10 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import Entries from '/imports/api/entries';
 import Zips from '/imports/api/zips';
 import ZipsDaily from '/imports/api/zipsDaily';
+
 import './api'
 import './syncData'
 import './aggregate'
 import './postData'
+import './moveOldEntries'
 
 
 // some handy methods

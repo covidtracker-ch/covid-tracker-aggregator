@@ -3,10 +3,11 @@ import { Meteor } from 'meteor/meteor';
 import Entries from '/imports/api/entries';
 import Zips from '/imports/api/zips';
 import ZipsDaily from '/imports/api/zipsDaily';
+import ZipsWeekly from '/imports/api/zipsWeekly';
 
 function postData() {
   console.log('post data to dataserver...')
-  const zips = Zips.find({submissions: {$gte: 50}});
+  const zips = Zips.find({submissions: {$gte: 50}}).fetch();
   let cases = 0;
   let submissions = 0;
   zips.forEach(z => {
@@ -19,7 +20,7 @@ function postData() {
     data: {
       zips: zips,
       zipsDaily: ZipsDaily.find({submissions: {$gte: 50}}).fetch(),
-      zipsWeekly: [],
+      zipsWeekly: ZipsWeekly.find({submissions: {$gte: 50}}).fetch(),
       total: {
         cases, submissions
       }

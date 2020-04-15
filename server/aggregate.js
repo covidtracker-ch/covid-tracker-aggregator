@@ -3,34 +3,44 @@ import { Meteor } from 'meteor/meteor';
 import Entries from '/imports/api/entries';
 import Zips from '/imports/api/zips';
 import ZipsDaily from '/imports/api/zipsDaily';
+import ZipsWeekly from '/imports/api/zipsWeekly';
 
-function computeDailyAggregations() {
-  console.log('computing daily aggregations...');
+function computeDailyAggregations(days) {
+  console.log('aggreagting',days,'days...');
   // put all counts to zero
-  ZipsDaily.remove({submissions: 0});
-  ZipsDaily.update({},{$set: {cases: 0, submissions: 0}}, {multi: true});
+  if(!days) return;
+  let ZipsCollection;
+  if(days === 1) ZipsCollection = ZipsDaily;
+  else if(days === 7) ZipsCollection = ZipsWeekly;
+  else return;
 
-  const before = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
+  ZipsCollection.remove({submissions: 0});
+  ZipsCollection.update({},{$set: {cases: 0, submissions: 0}}, {multi: true});
+
+  const before = new Date(new Date().getTime() - (days * 24 * 3600 * 1000));
   const entries = Entries.find({
     _created: {$gt: before}
   }).fetch();
   console.log('amount',entries.length);
   entries.forEach((entry, i) => {
     if(i%100 == 0) console.log(i);
-    let zip = ZipsDaily.findOne({zip: entry.zip});
+    console.log(i)                                              // remove this line 
+    let zip = ZipsCollection.findOne({zip: entry.zip});
     if(!zip) {
-      const id = ZipsDaily.insert({
+      const id = ZipsCollection.insert({
         zip: entry.zip,
         cases: 0,
         submissions: 0
       })
-      zip = ZipsDaily.findOne(id);
+      zip = ZipsCollection.findOne(id);
     };
     const cases = zip.cases + (entry.suspected ? 1 : 0);
     const submissions = zip.submissions + 1;
+    console.log('submissions',submissions);
     const fraction = cases/submissions;
+    console.log(zip._id);
     // increment 
-    ZipsDaily.update(zip._id, {$set: {
+    ZipsCollection.update(zip._id, {$set: {
       cases, submissions, fraction
     }});
   })
@@ -74,8 +84,8 @@ Meteor.methods({
     computeAggregations();
   },
 
-  aggregateDaily() {
-    computeDailyAggregations();
+  aggregateDaily(days) {
+    computeDailyAggregations(days);
   },
 
   setAllUnaggregated() {
@@ -91,15 +101,12 @@ Meteor.methods({
 
 Meteor.startup(() => {
   console.log('start aggregation loop');
+  
   Meteor.setTimeout(() => {
     computeAggregations();
-    computeDailyAggregations();
+    computeDailyAggregations(1);
+    computeDailyAggregations(7);
   }, 1000*3600)
-
-  // Meteor.setTimeout(() => {
-  //   // Todo!
-  //   // computeWeeklyAggregations()  
-  // }, 12000*3600)
 
 });
 

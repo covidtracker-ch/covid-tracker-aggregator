@@ -31,14 +31,14 @@ function hasTestedTPositive(entry) {
   if(entry.test_result == "positive") return true;
 }
 
-function getData() {
+function getData(skipMost) {
 
   let url = 'https://covid-export.apps-customer.210235761750.ninegcp.ch/export?since=';
   const user = 'export';
   const password = Meteor.settings.exportPassword;
   
   console.log('sync entries...');
-  
+  if(skipMost) console.log('skip most');
 
   const youngest = Entries.find({},{sort: {_created: -1}, limit: 1}).fetch();
   
@@ -48,13 +48,13 @@ function getData() {
     since = youngest[0]._created.toISOString().split('.')[0];
     console.log('getting all entries since',since);
   } else {
-    console.log('nothing in db, get everything');
+    console.log('nothing in db, fetch since beginning');
     since = '2020-03-25T13:00:00';
   }
 
   if(!Meteor.settings.public.isProduction) {
     // just fetch from 1 hour ago
-    console.log('in dev, so just from 3 hours ago');
+    console.log('we are in dev, so lets just fetch from 3 hours ago');
     const oneHourAgo = new Date(new Date().getTime()-10*1000*3600);
     since = oneHourAgo.toISOString().split('.')[0];
   }
@@ -84,11 +84,7 @@ function getData() {
   console.log('upserting...');
   entries.forEach((entry,i) => {
     if(i%100 == 0) console.log(i);
-    // if(i%100 !== 0) return;                      // faster retrieval for dev
-    if(!entry.age_range) {
-      // it is an "old" entry
-      console.log('old format, who cares');
-    }                    
+    if(skipMost && i%100 !== 0) return;                      // faster retrieval for dev
     if(Entries.findOne({id: entry.id})) return;
     entry._created = new Date(entry._created);
     entry.suspected = isSuspectedPositive(entry);
@@ -100,8 +96,8 @@ function getData() {
 
 Meteor.methods({
 
-  getData() {
-    getData();
+  getData(skipMost) {
+    getData(skipMost);
   },
 
   classifyAllThatAreNot() {
