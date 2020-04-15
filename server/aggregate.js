@@ -24,7 +24,6 @@ function computeDailyAggregations(days) {
   console.log('amount',entries.length);
   entries.forEach((entry, i) => {
     if(i%100 == 0) console.log(i);
-    console.log(i)                                              // remove this line 
     let zip = ZipsCollection.findOne({zip: entry.zip});
     if(!zip) {
       const id = ZipsCollection.insert({
@@ -36,9 +35,7 @@ function computeDailyAggregations(days) {
     };
     const cases = zip.cases + (entry.suspected ? 1 : 0);
     const submissions = zip.submissions + 1;
-    console.log('submissions',submissions);
     const fraction = cases/submissions;
-    console.log(zip._id);
     // increment 
     ZipsCollection.update(zip._id, {$set: {
       cases, submissions, fraction

@@ -9,11 +9,13 @@ function moveOldEntries() {
   console.log('removing old entries..');
   const before = new Date(new Date().getTime() - (14*24*3600*1000));
   const entries = Entries.find({_created: {$lt: before}}).fetch();
-  entries.forEach(entry => {
+  console.log('amount to move:', entries.length);
+
+  entries.forEach((entry,i) => {
+    if(i%100==0) console.log(i);
     OldEntries.insert(entry);
     Entries.remove(entry._id);
   });
-  console.log('amount moved:', entries.length);
   console.log('done.');
 }
 
