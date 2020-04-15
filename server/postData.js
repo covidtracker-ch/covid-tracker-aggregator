@@ -26,7 +26,20 @@ function postData() {
       }
     }
   }, r => {
-    console.log(r)
+    // console.log(r)
+  })
+
+  HTTP.post(Meteor.settings.postURL2,{
+    data: {
+      zips: zips,
+      zipsDaily: ZipsDaily.find({submissions: {$gte: 50}}).fetch(),
+      zipsWeekly: ZipsWeekly.find({submissions: {$gte: 50}}).fetch(),
+      total: {
+        cases, submissions
+      }
+    }
+  }, r => {
+    // console.log(r)
   })
   console.log('done');
 }
