@@ -22,3 +22,9 @@ Meteor.startup(() => {
     moveOldEntries();
   }, 4*3600*1000);
 });
+
+Meteor.methods({
+  moveOldEntries() {
+    moveOldEntries();
+  }
+});
