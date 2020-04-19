@@ -99,7 +99,7 @@ Meteor.methods({
 Meteor.startup(() => {
   console.log('start aggregation loop');
   
-  Meteor.setTimeout(() => {
+  Meteor.setInterval(() => {
     computeAggregations();
     computeDailyAggregations(1);
     computeDailyAggregations(7);
