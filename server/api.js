@@ -5,6 +5,7 @@ import Entries from '/imports/api/entries'
 import Zips from '/imports/api/zips'
 import ZipsDaily from '/imports/api/zipsDaily'
 import ZipsWeekly from '/imports/api/zipsWeekly'
+import Stats from '/imports/api/stats';
 
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
@@ -47,6 +48,11 @@ app.get('/api/zips', (req, res) => {
 app.get('/api/zipsDaily', (req, res) => {
   const zipsDaily = ZipsDaily.find({submissions: {$gte: 50}}).fetch();
   res.status(200).json(zipsDaily);
+});
+
+app.get('/api/stats', (req, res) => {
+  const stats = Stats.find({}).fetch();
+  res.status(200).json(stats);
 });
 
 app.get('/api/zipsWeekly', (req, res) => {
