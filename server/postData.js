@@ -70,7 +70,8 @@ Meteor.startup(() => {
       const summary = {
         total: getSummary(Zips.find().fetch()),
         daily: getSummary(ZipsDaily.find().fetch()),
-        weekly: getSummary(ZipsWeekly.find().fetch())
+        weekly: getSummary(ZipsWeekly.find().fetch()),
+        _created: new Date()
       };
       Stats.insert(summary);
     }
