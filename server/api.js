@@ -29,6 +29,34 @@ function toCSV(json) {
   return csv
 }
 
+function returnCSV(req, res, zips) {
+  if(req.query.download == 'true') {
+    res.setHeader('Content-disposition', 'attachment; filename=data.csv');
+    res.set('Content-Type', 'text/csv');
+  }
+  res.status(200).send(toCSV(zips));
+}
+
+var flattenObject = function(ob) {
+  var toReturn = {};
+  
+  for (var i in ob) {
+    if (!ob.hasOwnProperty(i)) continue;
+    
+    if ((typeof ob[i]) == 'object') {
+      var flatObject = flattenObject(ob[i]);
+      for (var x in flatObject) {
+        if (!flatObject.hasOwnProperty(x)) continue;
+        
+        toReturn[i + '.' + x] = flatObject[x];
+      }
+    } else {
+      toReturn[i] = ob[i];
+    }
+  }
+  return toReturn;
+};
+
 app.get('/api/zips', (req, res) => {
   let sortObj = {};
   if(req.query.sort) sortObj[req.query.sort] = -1;
@@ -52,7 +80,12 @@ app.get('/api/zipsDaily', (req, res) => {
 
 app.get('/api/stats', (req, res) => {
   const stats = Stats.find({}).fetch();
-  res.status(200).json(stats);
+  if(req.query.format == 'csv') {
+    const flattened = stats.map(s => flattenObject(s));
+    console.log(flattened);
+    returnCSV(req, res, flattened);
+  }
+  else res.status(200).json(stats);
 });
 
 app.get('/api/zipsWeekly', (req, res) => {
