@@ -1,7 +1,6 @@
 
 import { WebApp } from 'meteor/webapp'
 import express from 'express'
-import Entries from '/imports/api/entries'
 import Zips from '/imports/api/zips'
 import ZipsDaily from '/imports/api/zipsDaily'
 import ZipsWeekly from '/imports/api/zipsWeekly'

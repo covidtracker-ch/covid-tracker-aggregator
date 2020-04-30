@@ -31,7 +31,7 @@ function hasTestedTPositive(entry) {
   if(entry.test_result == "positive") return true;
 }
 
-function getData(skipMost) {
+function syncData(skipMost) {
 
   let url = 'https://covid-export.apps-customer.210235761750.ninegcp.ch/export?since=';
   const user = 'export';
@@ -96,8 +96,8 @@ function getData(skipMost) {
 
 Meteor.methods({
 
-  getData(skipMost) {
-    getData(skipMost);
+  syncData(skipMost) {
+    syncData(skipMost);
   },
 
   classifyAllThatAreNot() {
@@ -113,15 +113,4 @@ Meteor.methods({
 
 })
 
-
-Meteor.startup(() => {
-  console.log('start sync data loop')
-  Meteor.setInterval(() => {
-    getData();
-  }, 1000*3600)
-})
-
-
-
-
-
+export default syncData;

@@ -19,14 +19,10 @@ function moveOldEntries() {
   console.log('done.');
 }
 
-Meteor.startup(() => {
-  Meteor.setInterval(() => {
-    moveOldEntries();
-  }, 4*3600*1000);
-});
-
 Meteor.methods({
   moveOldEntries() {
     moveOldEntries();
   }
 });
+
+export default moveOldEntries;

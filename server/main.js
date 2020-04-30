@@ -1,15 +1,13 @@
 
 import { Meteor } from 'meteor/meteor';
 import Entries from '/imports/api/entries';
-import Zips from '/imports/api/zips';
-import ZipsDaily from '/imports/api/zipsDaily';
 
 import './api'
-import './syncData'
-import './aggregate'
-import './postData'
-import './moveOldEntries'
-
+import syncData from './syncData';
+import moveOldEntries from './moveOldEntries';
+import { computeAggregations, computeDailyAggregations } from './aggregate';
+import { postData, getSummary } from './postData';
+import { Stats } from '/imports/api/stats';
 
 // some handy methods
 Meteor.methods({
@@ -31,7 +29,7 @@ Meteor.methods({
     console.log('done.');
   },
 
-  importETHData() {
+  ETHDataImport() {
     const url = Meteor.settings.importURL;
     let string;
 
@@ -54,18 +52,41 @@ Meteor.methods({
       console.log(e);
       return;
     }
-  },
-
+  }
 })
 
+Meteor.startup(() => {
+  // start all the loops
+  console.log('start all loops');
 
+  SyncedCron.add({
+    name: 'Sync entries, aggregate, and post data',
+    schedule: (p) => { return p.cron('0 * * * *') },
+    job: () => { 
+      syncData() ;
+      computeAggregations();
+      computeDailyAggregations(1);
+      computeDailyAggregations(7);
+      postData();
+    }
+  });
 
+  SyncedCron.add({
+    name: 'Move old data',
+    schedule: (p) => { return p.cron('30 */4 * * *') },
+    job: () => { 
+      moveOldEntries()
+    }
+  });
 
+  SyncedCron.add({
+    name: 'Insert stats',
+    schedule: (p) => { return p.cron('59 23 * * *') },
+    job: () => { 
+      Stats.insert(getSummary());
+    }
+  });
+  
+  if(Meteor.settings.public.isProduction) SyncedCron.start();
 
-
-
-
-
-
-
-
+});

@@ -96,15 +96,4 @@ Meteor.methods({
 
 })
 
-Meteor.startup(() => {
-  console.log('start aggregation loop');
-  
-  Meteor.setInterval(() => {
-    computeAggregations();
-    computeDailyAggregations(1);
-    computeDailyAggregations(7);
-  }, 1000*3600)
-
-});
-
-
+export {computeAggregations, computeDailyAggregations}

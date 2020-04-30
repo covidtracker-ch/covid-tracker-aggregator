@@ -1,12 +1,10 @@
 
 import { Meteor } from 'meteor/meteor';
-import Entries from '/imports/api/entries';
 import Zips from '/imports/api/zips';
 import ZipsDaily from '/imports/api/zipsDaily';
 import ZipsWeekly from '/imports/api/zipsWeekly';
-import Stats from '/imports/api/stats';
 
-function getSummary(zips) {
+function zipSummary(zips) {
   let cases = 0;
   let submissions = 0;
   zips.forEach(z => {
@@ -16,6 +14,15 @@ function getSummary(zips) {
   return {cases, submissions}
 }
 
+function getSummary() {
+  return {
+    total: zipSummary(Zips.find().fetch()),
+    daily: zipSummary(ZipsDaily.find().fetch()),
+    weekly: zipSummary(ZipsWeekly.find().fetch()),
+    _created: new Date()
+  }
+}
+
 function postData() {
   console.log('post data to dataserver...')
 
@@ -23,11 +30,7 @@ function postData() {
     zips: Zips.find({submissions: {$gte: 50}}).fetch(),
     zipsDaily: ZipsDaily.find({submissions: {$gte: 50}}).fetch(),
     zipsWeekly: ZipsWeekly.find({submissions: {$gte: 50}}).fetch(),
-    summary: {
-      total: getSummary(Zips.find().fetch()),
-      daily: getSummary(ZipsDaily.find().fetch()),
-      weekly: getSummary(ZipsWeekly.find().fetch())
-    }
+    summary: getSummary()
   }
 
   HTTP.post(Meteor.settings.postURL,{
@@ -44,39 +47,4 @@ function postData() {
   console.log('done');
 }
 
-Meteor.methods({
-  postData() {
-    postData();
-  }
-});
-
-Meteor.startup(() => {
-  console.log('start post loop');
-  Meteor.setInterval(() => {
-    if(!Meteor.settings.public.isProduction) return;
-    postData();
-  }, 1000*3600)
-});
-
-Meteor.startup(() => {
-  console.log('sup')
-  SyncedCron.add({
-    name: 'Add stats',
-    schedule: function(parser) {
-      // parser is a later.parse object
-      return parser.text('at 11:00 pm');
-    },
-    job: function() {
-      const summary = {
-        total: getSummary(Zips.find().fetch()),
-        daily: getSummary(ZipsDaily.find().fetch()),
-        weekly: getSummary(ZipsWeekly.find().fetch()),
-        _created: new Date()
-      };
-      Stats.insert(summary);
-    }
-  });
-  SyncedCron.start();
-  
-})
-
+export {postData, getSummary};
