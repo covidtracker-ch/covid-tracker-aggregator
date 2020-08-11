@@ -39,12 +39,18 @@ function postData() {
     console.log(console.log('posted.'))
   })
 
-  HTTP.post(Meteor.settings.postURL2,{
+  HTTP.post(Meteor.settings.postURL,{
     data: postObj
   }, r => {
     console.log(console.log('posted.'))
   })
   console.log('done');
 }
+
+Meteor.methods({
+  postData() {
+    postData();
+  }
+})
 
 export {postData, getSummary};

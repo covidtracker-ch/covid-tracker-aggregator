@@ -33,7 +33,7 @@ function hasTestedTPositive(entry) {
 
 function syncData(skipMost) {
 
-  let url = 'https://covid-export.apps-customer.210235761750.ninegcp.ch/export?since=';
+  let url = 'https://api.covidtracker.ch/export?since=';
   const user = 'export';
   const password = Meteor.settings.exportPassword;
   
@@ -49,7 +49,7 @@ function syncData(skipMost) {
     console.log('getting all entries since',since);
   } else {
     console.log('nothing in db, fetch since beginning');
-    since = '2020-03-25T13:00:00';
+    since = '2020-07-20T13:00:00';
   }
 
   if(!Meteor.settings.public.isProduction) {
